@@ -2,6 +2,7 @@ package com.example.RecipeBook.controllers;
 
 import com.example.RecipeBook.services.FavouritesService;
 import com.example.RecipeBook.services.LikesService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -11,16 +12,14 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Controller
+@RequiredArgsConstructor
 public class RecipesPageController {
 
     private final LikesService likesService;
 
     private final FavouritesService favouritesService;
 
-    public RecipesPageController(LikesService likesService, FavouritesService favouritesServicel, FavouritesService favouritesService) {
-        this.likesService = likesService;
-        this.favouritesService = favouritesService;
-    }
+
 
     @RequestMapping("/btn_like_clicked/{recipeId}/{userId}")
     private String likeButtonClicked(@PathVariable(value = "recipeId") long recipeId,

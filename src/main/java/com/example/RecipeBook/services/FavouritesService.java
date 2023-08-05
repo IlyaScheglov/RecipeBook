@@ -1,23 +1,30 @@
 package com.example.RecipeBook.services;
 
 import com.example.RecipeBook.entities.Favourites;
+import com.example.RecipeBook.entities.Recipes;
 import com.example.RecipeBook.repos.FavouritesRepo;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class FavouritesService {
 
     private final FavouritesRepo favouritesRepo;
 
-    public FavouritesService(FavouritesRepo favouritesRepo) {
-        this.favouritesRepo = favouritesRepo;
-    }
+    private final RecipesService recipesService;
+
+
 
     public int getCountOfFavourites(long recipeId){
-        List<Favourites> favouritesByRecipeId = favouritesRepo.findFavouritesByRecipeId(recipeId);
-        return favouritesByRecipeId.size();
+        return favouritesRepo.findFavouritesByRecipeId(recipeId).size();
+    }
+
+    public int getCountOfUserFavourites(long userId){
+        return favouritesRepo.findByUserId(userId).size();
     }
 
     public boolean isRecipeFavouriteForThisUser(long userId, long recipeId){
@@ -44,6 +51,14 @@ public class FavouritesService {
             favourites = el;
         }
         favouritesRepo.delete(favourites);
+    }
 
+    public List<Recipes> getFavouriteRecipes(long userId){
+        List<Favourites> favourites = favouritesRepo.findByUserId(userId);
+        List<Recipes> recipesToReturn = new ArrayList<>();
+        for (var el : favourites){
+            recipesToReturn.add(recipesService.getRecipeById(el.getRecipeId()));
+        }
+        return recipesToReturn;
     }
 }

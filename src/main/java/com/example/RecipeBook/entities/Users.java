@@ -7,6 +7,7 @@ import lombok.Setter;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -19,8 +20,8 @@ public class Users implements Serializable{
     @Column(name = "id")
     private long id;
 
-    @Column(name = "login")
-    private String login;
+    @Column(name = "username")
+    private String username;
 
     @Column(name = "password")
     private String password;
@@ -33,6 +34,11 @@ public class Users implements Serializable{
 
     @Column(name = "active")
     private boolean active;
+
+    @ElementCollection(targetClass = Roles.class, fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
+    @Enumerated(EnumType.STRING)
+    private Set<Roles> roles;
 
     @OneToMany(mappedBy = "users")
     private List<Recipes> recipes = new ArrayList<>();

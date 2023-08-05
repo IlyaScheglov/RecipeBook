@@ -17,4 +17,6 @@ public interface FavouritesRepo extends JpaRepository<Favourites, Long> {
 
     @Query("SELECT f FROM Favourites f WHERE f.userId = :usId AND f.recipeId = :recId")
     List<Favourites> findFavouriteIdByUserAndRecipeId(@Param("usId") long userId, @Param("recId") long recipeId);
+
+    List<Favourites> findByUserId(long userId);
 }

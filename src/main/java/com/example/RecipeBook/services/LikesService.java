@@ -1,23 +1,30 @@
 package com.example.RecipeBook.services;
 
 import com.example.RecipeBook.entities.Likes;
+import com.example.RecipeBook.entities.Recipes;
 import com.example.RecipeBook.repos.LikesRepo;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class LikesService {
 
     private final LikesRepo likesRepo;
 
-    public LikesService(LikesRepo likesRepo) {
-        this.likesRepo = likesRepo;
-    }
+    private final RecipesService recipesService;
+
+
 
     public int getCountOfLikes(long recipeId){
-        List<Likes> likesByRecipeId = likesRepo.findLikesByRecipeId(recipeId);
-        return likesByRecipeId.size();
+        return likesRepo.findLikesByRecipeId(recipeId).size();
+    }
+
+    public int getCountOfUserLikes(long userId){
+        return likesRepo.findByUserId(userId).size();
     }
 
     public boolean thisUserLikeRecipeOrNot(long userId, long recipeId){
@@ -44,5 +51,14 @@ public class LikesService {
         likes.setUserId(userId);
         likes.setRecipeId(recipeId);
         likesRepo.save(likes);
+    }
+
+    public List<Recipes> getLikedRecipes(long userId){
+        List<Likes> likes = likesRepo.findByUserId(userId);
+        List<Recipes> recipesToReturn = new ArrayList<>();
+        for (var el : likes){
+            recipesToReturn.add(recipesService.getRecipeById(el.getRecipeId()));
+        }
+        return recipesToReturn;
     }
 }

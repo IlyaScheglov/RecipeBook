@@ -10,6 +10,5 @@ import java.util.List;
 
 public interface RecipesRepo extends JpaRepository<Recipes, Long> {
 
-    @Query("SELECT r FROM Recipes r LEFT JOIN FETCH r.users")
-    List<Recipes> getRecipesWithUserLogin();
+    List<Recipes> findByUserId(long userId);
 }
