@@ -11,4 +11,5 @@ import java.util.List;
 public interface RecipesRepo extends JpaRepository<Recipes, Long> {
 
     List<Recipes> findByUserId(long userId);
+
 }

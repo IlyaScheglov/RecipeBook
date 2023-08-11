@@ -15,8 +15,6 @@ public class LikesService {
 
     private final LikesRepo likesRepo;
 
-    private final RecipesService recipesService;
-
 
 
     public int getCountOfLikes(long recipeId){
@@ -53,12 +51,14 @@ public class LikesService {
         likesRepo.save(likes);
     }
 
-    public List<Recipes> getLikedRecipes(long userId){
+
+    public List<Long> getLikedRecipesId(long userId){
         List<Likes> likes = likesRepo.findByUserId(userId);
-        List<Recipes> recipesToReturn = new ArrayList<>();
+        List<Long> recipesIdToReturn = new ArrayList<>();
         for (var el : likes){
-            recipesToReturn.add(recipesService.getRecipeById(el.getRecipeId()));
+            recipesIdToReturn.add(el.getRecipeId());
         }
-        return recipesToReturn;
+        return recipesIdToReturn;
     }
+
 }

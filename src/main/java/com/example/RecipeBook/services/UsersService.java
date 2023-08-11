@@ -1,7 +1,9 @@
 package com.example.RecipeBook.services;
 
 import com.example.RecipeBook.config.WebSecurityConfig;
+import com.example.RecipeBook.entities.Recipes;
 import com.example.RecipeBook.entities.Roles;
+import com.example.RecipeBook.entities.UserRecipesCount;
 import com.example.RecipeBook.entities.Users;
 import com.example.RecipeBook.repos.UsersRepo;
 import jakarta.transaction.Transactional;
@@ -38,8 +40,8 @@ public class UsersService implements UserDetailsService{
         return usersRepo.findAll();
     }
 
-    public String getUserUsernameByRecipe(long id){
-        Optional<Users> users = usersRepo.findById(id);
+    public String getUserUsernameByRecipe(Recipes recipes){
+        Optional<Users> users = usersRepo.findById(recipes.getUserId());
         List<Users> usersList = new ArrayList<>();
         users.ifPresent(usersList::add);
         String usernameToReturn = "";
@@ -88,6 +90,14 @@ public class UsersService implements UserDetailsService{
     public boolean checkPassword(Users users, String password){
         String hashedPassword = users.getPassword();
         return BCrypt.checkpw(password, hashedPassword);
+    }
+
+    public UserRecipesCount makeCountUserRecipes(int ownCount, int likedCount, int favouriteCount){
+        UserRecipesCount userRecipesCount = new UserRecipesCount();
+        userRecipesCount.setOwnCount(ownCount);
+        userRecipesCount.setLikedCount(likedCount);
+        userRecipesCount.setFavouriteCount(favouriteCount);
+        return userRecipesCount;
     }
 
 

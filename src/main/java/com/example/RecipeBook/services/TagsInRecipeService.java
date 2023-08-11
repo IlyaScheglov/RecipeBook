@@ -33,11 +33,12 @@ public class TagsInRecipeService {
 
         if (tagsArray.length != 0){
             List<String> tagsToDb = new ArrayList<>();
-            for(int i = 0; i > tagsArray.length; i++){
+            for(int i = 0; i < tagsArray.length; i++){
                 if (tagsArray[i] != ""){
                     tagsToDb.add(tagsArray[i]);
                 }
             }
+
             for(var el : tagsToDb){
                 if(tagsService.getTagIdByTitle(el) != 0){
                     TagsInRecipe tagsInRecipe = new TagsInRecipe();

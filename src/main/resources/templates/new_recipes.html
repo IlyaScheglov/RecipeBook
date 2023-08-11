@@ -11,26 +11,17 @@
     app.controller("RECIPES_CTRL", function($scope, $http){
 
     $scope.recipes = [];
-    $scope.typeList = 'own';
-
     $scope.getRecipes = function(){
     $http({
-    url: '/get_recipes_in_profile',
+    url: '/get_recipes',
     method: 'GET',
-    params: {typeList: $scope.typeList}
     }).then(function(response){
     $scope.recipes = response.data;
+    console.log($scope.recipes);
     })
     }
 
     $scope.getRecipes();
-
-
-    $scope.changeList = function(typeList){
-    $scope.typeList = typeList;
-    $scope.getRecipes();
-    console.log("Hello World");
-    }
 
     $scope.like = function(id){
     $http({
@@ -75,28 +66,9 @@
     });
 </script>
 <body ng-app="RECIPES" ng-controller="RECIPES_CTRL">
-<header th:insert="blocks/header :: header_profile"></header>
-<div class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
-    <h1 class="fs-4">Мой профиль</h1>
-    <form class="me-3 py-2 link-body-emphasis text-decoration-none" th:action="@{/logout}" method="post">
-        <input  type="submit" value="Выйти"/>
-    </form>
-    <button class="btn btn-primary rounded-pill px-3" type="button" text="Добавить рецепт" th:onclick="|window.location.href='/addrecipe'|"></button>
-</div>
-<div>
-<h2 class="fs-4" th:text="'Логин: ' + ${user.username}"></h2>
-<h2 class="fs-4" th:text="'Имя: ' + ${user.name}"></h2>
-</div>
-<div class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
-    <button class="btn btn-primary rounded-pill px-3" type="button" ng-click="changeList('own')">1</button>
-    <button class="btn btn-primary rounded-pill px-3" type="button" ng-click="changeList('liked')">1</button>
-    <button class="btn btn-primary rounded-pill px-3" type="button" ng-click="changeList('fav')">1</button>
-</div>
-<h2 class="fs-4" ng-if="typeList == 'own'">Мои рецепты</h2>
-<h2 class="fs-4" ng-if="typeList == 'liked'">Мои лайки</h2>
-<h2 class="fs-4" ng-if="typeList == 'fav'">Избранное</h2>
+<header th:insert="blocks/header :: header_recipes"></header>
 
-<p ng-if="recipes.length() == 0">Здесь нету рецептов</p>
+<p ng-if="{{recipes.length() == 0}}">Здесь нету рецептов</p>
 <div class="album py-5 bg-body-tertiary">
     <div class="container">
         <div class="col">
@@ -152,6 +124,7 @@
         </div>
     </div>
 </div>
+
 <div th:insert="blocks/footer :: footer"></div>
 </body>
 </html>

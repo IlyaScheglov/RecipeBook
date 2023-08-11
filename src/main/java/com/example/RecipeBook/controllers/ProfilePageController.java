@@ -3,6 +3,7 @@ package com.example.RecipeBook.controllers;
 import com.example.RecipeBook.entities.Users;
 import com.example.RecipeBook.services.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.unit.DataSize;
@@ -17,12 +18,16 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.Principal;
+import java.util.UUID;
 
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 @Controller
 @RequiredArgsConstructor
 public class ProfilePageController {
+
+    @Value("${upload.path}")
+    private String uploadPath;
 
     private final UsersService usersService;
 
@@ -43,7 +48,6 @@ public class ProfilePageController {
         model.addAttribute("countOfMyRecipes", recipesService.getCountOfUserRecipes(users.getId()));
         model.addAttribute("countOfLikedRecipes", likesService.getCountOfUserLikes(users.getId()));
         model.addAttribute("countOfFavouriteRecipes", favouritesService.getCountOfUserFavourites(users.getId()));
-        model.addAttribute("recipesList", likesService.getLikedRecipes(users.getId()));
         model.addAttribute("kindOfList", "Лайкнутые рецепты");
         model.addAttribute("usersService", usersService);
         model.addAttribute("likesService", likesService);
@@ -59,7 +63,6 @@ public class ProfilePageController {
         model.addAttribute("countOfMyRecipes", recipesService.getCountOfUserRecipes(users.getId()));
         model.addAttribute("countOfLikedRecipes", likesService.getCountOfUserLikes(users.getId()));
         model.addAttribute("countOfFavouriteRecipes", favouritesService.getCountOfUserFavourites(users.getId()));
-        model.addAttribute("recipesList", favouritesService.getFavouriteRecipes(users.getId()));
         model.addAttribute("kindOfList", "Рецепты в избранном");
         model.addAttribute("usersService", usersService);
         model.addAttribute("likesService", likesService);
@@ -81,14 +84,18 @@ public class ProfilePageController {
         Users user = usersService.getUserByPrincipal(principal);
         if (!image.isEmpty()) {
             if ((image.getSize() / (1024 * 1024)) <= 2){
-                String filePath = "src/main/resources/static/img/" + image.getOriginalFilename();
-                byte[] bytes = image.getBytes();
-                BufferedOutputStream stream =
-                        new BufferedOutputStream(new FileOutputStream(new File(filePath)));
-                stream.write(bytes);
-                stream.close();
+                File uploadDir = new File(uploadPath);
+                if(!uploadDir.exists()){
+                    uploadDir.mkdir();
+                }
+
+                String uuidFile = UUID.randomUUID().toString();
+                String resultFileName = uuidFile + "-" + image.getOriginalFilename();
+
+                image.transferTo(new File(uploadPath + "/" + resultFileName));
+
                 recipesService.addNewRecipe(title,description,tags,time, portions,
-                        "img/" + image.getOriginalFilename(), user.getId());
+                        "/img/" + resultFileName, user.getId());
                 return "redirect:/profile";
             }
             else{

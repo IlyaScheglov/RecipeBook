@@ -15,8 +15,6 @@ public class FavouritesService {
 
     private final FavouritesRepo favouritesRepo;
 
-    private final RecipesService recipesService;
-
 
 
     public int getCountOfFavourites(long recipeId){
@@ -53,12 +51,14 @@ public class FavouritesService {
         favouritesRepo.delete(favourites);
     }
 
-    public List<Recipes> getFavouriteRecipes(long userId){
+
+    public List<Long> getFavouriteRecipesId(long userId){
         List<Favourites> favourites = favouritesRepo.findByUserId(userId);
-        List<Recipes> recipesToReturn = new ArrayList<>();
+        List<Long> recipesIdToReturn = new ArrayList<>();
         for (var el : favourites){
-            recipesToReturn.add(recipesService.getRecipeById(el.getRecipeId()));
+            recipesIdToReturn.add(el.getRecipeId());
         }
-        return recipesToReturn;
+        return recipesIdToReturn;
     }
+
 }
