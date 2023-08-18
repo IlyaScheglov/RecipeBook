@@ -49,4 +49,10 @@ public class Users implements Serializable{
     @OneToMany(mappedBy = "users")
     private List<Favourites> favourites = new ArrayList<>();
 
+    @OneToMany(mappedBy = "users")
+    private List<Steps> steps = new ArrayList<>();
+
+    @OneToMany(mappedBy = "users")
+    private List<Ingridients> ingridients = new ArrayList<>();
+
 }

@@ -129,4 +129,12 @@ public class RecipesService {
         }
     }
 
+    public void addRecipe(Recipes recipes, long userId, String photoPath){
+        recipes.setUserId(userId);
+        recipes.setDishImage(photoPath);
+        recipesRepo.save(recipes);
+
+
+    }
+
 }

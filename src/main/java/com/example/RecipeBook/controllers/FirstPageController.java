@@ -58,4 +58,9 @@ public class FirstPageController {
         return "new_recipes";
     }
 
+    @GetMapping("/p")
+    private String p(){
+        return "p";
+    }
+
 }

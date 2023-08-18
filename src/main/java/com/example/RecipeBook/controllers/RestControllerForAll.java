@@ -35,17 +35,7 @@ public class RestControllerForAll {
         return ResponseEntity.ok(recipesService.getAllRecipesToShow(users, "all"));
     }
 
-    @GetMapping("/get_own_recipes")
-    public ResponseEntity getOwnRecipes(Principal principal){
-        Users users = usersService.getUserByPrincipal(principal);
-        return ResponseEntity.ok(recipesService.getAllRecipesToShow(users, "own"));
-    }
 
-    @GetMapping("/get_liked_recipes")
-    public ResponseEntity getLikedRecipes(Principal principal){
-        Users users = usersService.getUserByPrincipal(principal);
-        return ResponseEntity.ok(recipesService.getAllRecipesToShow(users, "liked"));
-    }
 
     @GetMapping("/get_favourite_recipes")
     public ResponseEntity getFavouriteRecipes(Principal principal){
@@ -59,13 +49,16 @@ public class RestControllerForAll {
         return ResponseEntity.ok(recipesService.getAllRecipesToShow(users, typeList));
     }
 
-    @GetMapping("/get_user_recipes_count")
-    public ResponseEntity getUserRecipesCount(Principal principal){
+
+
+    @GetMapping("/get_count_of_recipes")
+    public ResponseEntity getCountUserRecipes(Principal principal){
         Users users = usersService.getUserByPrincipal(principal);
         int ownCount = recipesService.getCountOfUserRecipes(users.getId());
         int likedCount = likesService.getCountOfUserLikes(users.getId());
         int favouriteCount = favouritesService.getCountOfUserFavourites(users.getId());
-        return ResponseEntity.ok(usersService.makeCountUserRecipes(ownCount, likedCount, favouriteCount));
+        int[] userCountArray = {ownCount, likedCount, favouriteCount};
+        return ResponseEntity.ok(userCountArray);
     }
 
     @PostMapping("/like_recipe")

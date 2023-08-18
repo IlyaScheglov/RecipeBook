@@ -26,6 +26,12 @@ public class Steps implements Serializable{
     @Column(name = "description")
     private String description;
 
+    @Column(name = "user_id")
+    private long userId;
+
     @ManyToOne
     private Recipes recipes;
+
+    @ManyToOne
+    private Users users;
 }

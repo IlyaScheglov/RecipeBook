@@ -26,6 +26,15 @@ public class Ingridients implements Serializable{
     @Column(name = "list_of_ingridients")
     private String listOfIngridients;
 
+    @Column(name = "user_id")
+    private long userId;
+
+    @Column(name = "number")
+    private int number;
+
     @ManyToOne
     private Recipes recipes;
+
+    @ManyToOne
+    private Users users;
 }

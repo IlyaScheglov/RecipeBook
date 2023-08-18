@@ -22,6 +22,7 @@ public class Tags implements Serializable{
     @Column(name = "title")
     private String title;
 
+
     @OneToMany(mappedBy = "tags")
     private List<TagsInRecipe> tagsInRecipe = new ArrayList<>();
 }

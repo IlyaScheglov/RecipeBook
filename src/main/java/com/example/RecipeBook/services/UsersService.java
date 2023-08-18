@@ -1,21 +1,17 @@
 package com.example.RecipeBook.services;
 
-import com.example.RecipeBook.config.WebSecurityConfig;
 import com.example.RecipeBook.entities.Recipes;
 import com.example.RecipeBook.entities.Roles;
-import com.example.RecipeBook.entities.UserRecipesCount;
 import com.example.RecipeBook.entities.Users;
 import com.example.RecipeBook.repos.UsersRepo;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -92,13 +88,6 @@ public class UsersService implements UserDetailsService{
         return BCrypt.checkpw(password, hashedPassword);
     }
 
-    public UserRecipesCount makeCountUserRecipes(int ownCount, int likedCount, int favouriteCount){
-        UserRecipesCount userRecipesCount = new UserRecipesCount();
-        userRecipesCount.setOwnCount(ownCount);
-        userRecipesCount.setLikedCount(likedCount);
-        userRecipesCount.setFavouriteCount(favouriteCount);
-        return userRecipesCount;
-    }
 
 
 }

@@ -13,6 +13,7 @@
 <form th:action="@{/login}" method="post">
     <div><label> Логин: <input type="text" name="username"/> </label></div>
     <div><label> Пароль: <input type="password" name="password"/> </label></div>
+    <div><input type="hidden" name="_csrf" th:value="${_csrf.token}"/></div>
     <div><input type="submit" value="Авторизоваться"/></div>
     <div><a href="/registration">У меня еще нет аккаунта</a></div>
 </form>

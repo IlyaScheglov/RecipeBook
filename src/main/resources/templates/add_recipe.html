@@ -9,7 +9,7 @@
 <header th:insert="blocks/header :: header_profile"></header>
 
 <form th:action="@{/add_new_recipe}" method="post" enctype="multipart/form-data">
-    <input type="file" class="form-control" name="image" required>
+    <input type="file" class="form-control" name="image" accept=".jpg,.png">
     <input type="text" class="form-control" name="title" placeholder="Название" maxlength="50" required>
     <input type="text" class="form-control" name="description" placeholder="Краткое описание рецепта(150 символов)" maxlength="150" required>
     <input type="text" class="form-control" name="tags" placeholder="Добавить тэги" required>
