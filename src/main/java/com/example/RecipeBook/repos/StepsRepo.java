@@ -9,8 +9,8 @@ import java.util.List;
 
 public interface StepsRepo extends JpaRepository<Steps, Long> {
 
-    @Query("SELECT s FROM Steps s WHERE s.userId = :usId AND s.description = :desc")
-    List<Steps> findStepsByUserIdAndNullDescription(@Param("usId") long userId, @Param("desc") String desc);
+    @Query("SELECT s FROM Steps s WHERE s.userId = :usId AND s.recipeId = :recId")
+    List<Steps> findStepsByUserIdAndNullRecipeId(@Param("usId") long userId, @Param("recId") long recipeId);
 
     Steps findById(long id);
 }

@@ -22,7 +22,18 @@
 
     $scope.photo = null;
 
-
+    $scope.deleteIngridientsAndSteps = function(){
+    $http({
+    url: 'delete_excess_Ings_Steps',
+    method: 'DELETE',
+    headers: {
+    'X-CSRF-TOKEN': $scope.csrf
+    }
+    }).then(function(){
+    $scope.getIngridients();
+    $scope.getSteps();
+    });
+    }
 
     $scope.getIngridients = function(){
     $http({
@@ -39,11 +50,10 @@
     method: 'GET'
     }).then(function(response){
     $scope.steps = response.data;
-    $scope.getIngridients();
     });
     }
 
-    $scope.getSteps();
+    $scope.deleteIngridientsAndSteps();
 
 
     $scope.filesChanged = function(elm){
@@ -55,7 +65,40 @@
     var fd = new FormData();
     fd.append('file', $scope.photo);
     $http.post('/add_photo', fd, { transformRequest: angular.identity,
-     headers: {'Content-Type': undefined, 'X-CSRF-TOKEN': $scope.csrf} }) .success(function(){ }) .error(function(){ }); }
+     headers: {'Content-Type': undefined, 'X-CSRF-TOKEN': $scope.csrf},
+      transformResponse: [
+      function(data){
+      return data;
+      }
+      ]}).then(function(response){
+     $scope.uploadRecipe(response.data);
+     });
+     }
+
+     $scope.uploadRecipe = function(photoPath){
+     $http({
+     url: '/upload_recipe',
+     method: 'POST',
+     data: {
+     title: $scope.rec.title,
+     dishImage: null,
+     description: $scope.rec.description,
+     categoryType: $scope.rec.category,
+     cookingTimeMinutes: $scope.rec.cookingTimeMinutes,
+     portions: $scope.rec.portions,
+     userId: null
+     },
+     params: {
+     path: photoPath,
+     tags: $scope.rec.tags
+     },
+     headers: {
+     'X-CSRF-TOKEN': $scope.csrf
+     }
+     }).then(function(){
+     console.log("Рецепт добавлен");
+     });
+     }
 
 
     $scope.addNewIngridients = function(){
@@ -115,7 +158,53 @@
     });
     }
 
+    $scope.titleIngChanged = function(elm){
+    $http({
+    url: '/change_ing_title',
+    method: 'PUT',
+    params: {
+    idOfIng: elm.id,
+    titleOfIng: elm.value
+    },
+    headers: {
+    'X-CSRF-TOKEN': $scope.csrf
+    }
+    }).then(function(){
+    console.log("successful");
+    });
+    }
 
+    $scope.listIngChanged = function(elm){
+    $http({
+    url: '/change_ing_list',
+    method: 'PUT',
+    params: {
+    idOfIng: elm.id - 1,
+    listOfIng: elm.value
+    },
+    headers: {
+    'X-CSRF-TOKEN': $scope.csrf
+    }
+    }).then(function(){
+    console.log("successful");
+    });
+    }
+
+    $scope.descriptionStepsChanged = function(elm){
+    $http({
+    url: '/change_steps_description',
+    method: 'PUT',
+    params: {
+    idOfStep: elm.id,
+    descOfStep: elm.value
+    },
+    headers: {
+    'X-CSRF-TOKEN': $scope.csrf
+    }
+    }).then(function(){
+    console.log("successful");
+    });
+    }
 
     });
 </script>
@@ -135,7 +224,7 @@
         <option value="3">От шеф-поваров</option>
         <option value="4">На Праздник</option>
     </select>
-    <input ng-model="tags" type="text" class="form-control" name="tags" placeholder="Добавить тэги">
+    <input ng-model="rec.tags" type="text" class="form-control" name="tags" placeholder="Добавить тэги">
     <div class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
         <input ng-model="rec.cookingTimeMinutes" type="number" class="form-control" name="time" placeholder="Время готовки">
         <p>Минут</p>
@@ -153,8 +242,8 @@
                     <div ng-repeat="ing in ingridients">
                         <div class="card shadow-sm">
                             <div class="card-body">
-                                <input ng-model="ing.title" type="text" class="form-control" name="title" placeholder="Заголовок ингридиентов" maxlength="50" required>
-                                <input ng-model="ing.listOfIngridients" type="text" class="form-control" name="description" placeholder="Список ингридиентов(500 символов)" maxlength="500" required>
+                                <input type="text" class="form-control" name="title" id="{{ing.id}}" onchange="angular.element(this).scope().titleIngChanged(this)" placeholder="Заголовок ингридиентов" maxlength="50" required>
+                                <input type="text" class="form-control" name="description" id="{{ing.id + 1}}" onchange="angular.element(this).scope().listIngChanged(this)" placeholder="Список ингридиентов(500 символов)" maxlength="500" required>
                                 <button ng-if="ing.number == countIngridients" type="button" ng-click="deleteIngridients(ing.id)" class="btn btn-primary rounded-pill px-3">Удалить</button>
                             </div>
                         </div>
@@ -173,7 +262,7 @@
                         <div class="card shadow-sm">
                             <div class="card-body">
                                 <p>Шаг {{st.number}}</p>
-                                <input ng-model="st.description" type="text" class="form-control" name="description" placeholder="Описание шага(500 символов)" maxlength="500" required>
+                                <input type="text" class="form-control" name="description" id="{{st.id}}" onchange="angular.element(this).scope().descriptionStepsChanged(this)" placeholder="Описание шага(500 символов)" maxlength="500" required>
                                 <button ng-if="st.number == countSteps" type="button" ng-click="deleteSteps(st.id)" class="btn btn-primary rounded-pill px-3">Удалить</button>
                             </div>
                         </div>

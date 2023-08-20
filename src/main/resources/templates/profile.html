@@ -22,17 +22,7 @@
 
     $scope.csrf = document.querySelector("meta[name='_csrf']").content;
 
-    $scope.deleteIngridientsAndSteps = function(){
-    $http({
-    url: 'delete_excess_Ings_Steps',
-    method: 'DELETE',
-    headers: {
-    'X-CSRF-TOKEN': $scope.csrf
-    }
-    }).then(function(){
-    console.log("Все лишнее удалено");
-    });
-    }
+
 
     $scope.getCount = function(){
     $http({
@@ -54,7 +44,6 @@
     }).then(function(response){
     $scope.recipes = response.data;
     $scope.getCount();
-    $scope.deleteIngridientsAndSteps();
     })
     }
 
@@ -128,7 +117,7 @@
     <form class="me-3 py-2 link-body-emphasis text-decoration-none" th:action="@{/logout}" method="post">
         <input  type="submit" value="Выйти"/>
     </form>
-    <button class="btn btn-primary rounded-pill px-3" type="button"  th:onclick="|window.location.href='/addrecipe'|">Добавить рецепт</button>
+    <button class="btn btn-primary rounded-pill px-3" type="button"  th:onclick="|window.location.href='/profile/addrecipe'|">Добавить рецепт</button>
 </div>
 <div>
 <h2 class="fs-4" th:text="'Логин: ' + ${user.username}"></h2>

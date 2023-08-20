@@ -14,15 +14,15 @@ public class IngridientsService {
 
     private final IngridientsRepo ingridientsRepo;
 
-    public List<Ingridients> findByUserIdAndNullListIngs(long userId){
-        return ingridientsRepo.findByUserIdAndNullListOfIngs(userId, "");
+    public List<Ingridients> findByUserIdAndNullRecipeId(long userId){
+        return ingridientsRepo.findByUserIdAndNullRecipeId(userId, 0L);
     }
 
     public void addNewIngridients(long userId, int number){
         Ingridients ingridients = new Ingridients();
         ingridients.setNumber(number + 1);
         ingridients.setUserId(userId);
-        ingridients.setListOfIngridients("");
+        ingridients.setRecipeId(0L);
         ingridientsRepo.save(ingridients);
     }
 
@@ -32,11 +32,34 @@ public class IngridientsService {
     }
 
     public void deleteExcess(long userId){
-        List<Ingridients> ingsToDelete = findByUserIdAndNullListIngs(userId);
+        List<Ingridients> ingsToDelete = findByUserIdAndNullRecipeId(userId);
         if (ingsToDelete.size() > 0){
             for (var el : ingsToDelete){
                 deleteIngridient(el.getId());
             }
+        }
+    }
+
+    public void editIngridientTitle(long id, String title){
+        Ingridients ingridients = ingridientsRepo.findById(id);
+
+        ingridients.setTitle(title);
+        ingridientsRepo.save(ingridients);
+    }
+
+    public void editIngridientList(long id, String list){
+        Ingridients ingridients = ingridientsRepo.findById(id);
+
+        ingridients.setListOfIngridients(list);
+        ingridientsRepo.save(ingridients);
+    }
+
+    public void changeRecipeId(long userId, long recipeId){
+        List<Ingridients> ingridientsList = findByUserIdAndNullRecipeId(userId);
+
+        for (var el : ingridientsList){
+            el.setRecipeId(recipeId);
+            ingridientsRepo.save(el);
         }
     }
 }

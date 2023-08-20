@@ -27,7 +27,10 @@
     $http({
     url: '/like_recipe',
     method: 'POST',
-    params: {recipeId: id}
+    params: {recipeId: id},
+    headers: {
+    'X-CSRF-TOKEN': $scope.csrf
+    }
     }).then(function(){
     $scope.getRecipes();
     });
@@ -37,7 +40,10 @@
     $http({
     url: '/dislike_recipe',
     method: 'DELETE',
-    params: {recipeId: id}
+    params: {recipeId: id},
+    headers: {
+    'X-CSRF-TOKEN': $scope.csrf
+    }
     }).then(function(){
     $scope.getRecipes();
     });
@@ -47,7 +53,10 @@
     $http({
     url: '/favourite_recipe',
     method: 'POST',
-    params: {recipeId: id}
+    params: {recipeId: id},
+    headers: {
+    'X-CSRF-TOKEN': $scope.csrf
+    }
     }).then(function(){
     $scope.getRecipes();
     });
@@ -57,7 +66,10 @@
     $http({
     url: '/not_favourite_recipe',
     method: 'DELETE',
-    params: {recipeId: id}
+    params: {recipeId: id},
+    headers: {
+    'X-CSRF-TOKEN': $scope.csrf
+    }
     }).then(function(){
     $scope.getRecipes();
     });
