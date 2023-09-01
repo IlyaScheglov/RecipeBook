@@ -11,4 +11,9 @@ public interface TagsInRecipeRepo extends JpaRepository<TagsInRecipe, Long> {
 
     @Query("SELECT t.tagId FROM TagsInRecipe t WHERE recipeId = :recId")
     List<Long> findAllRecipeTagsId(@Param("recId") long recipeId);
+
+    List<TagsInRecipe> findByRecipeId(long recipeId);
+
+    @Query("SELECT t.recipeId FROM TagsInRecipe t WHERE tagId = :tId")
+    List<Long> findRecipeIdByTagId(@Param("tId") long tagId);
 }

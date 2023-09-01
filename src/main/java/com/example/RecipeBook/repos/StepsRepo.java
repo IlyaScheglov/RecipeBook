@@ -13,4 +13,6 @@ public interface StepsRepo extends JpaRepository<Steps, Long> {
     List<Steps> findStepsByUserIdAndNullRecipeId(@Param("usId") long userId, @Param("recId") long recipeId);
 
     Steps findById(long id);
+
+    List<Steps> findByRecipeId(long recipeId);
 }

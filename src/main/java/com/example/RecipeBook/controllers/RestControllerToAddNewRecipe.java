@@ -76,7 +76,7 @@ public class RestControllerToAddNewRecipe {
         stepsService.deleteSteps(stepId);
     }
 
-    @DeleteMapping("delete_excess_Ings_Steps")
+    @DeleteMapping("/delete_excess_ings_steps")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteExcessIngsSteps(Principal principal){
         long userId = usersService.getUserByPrincipal(principal).getId();

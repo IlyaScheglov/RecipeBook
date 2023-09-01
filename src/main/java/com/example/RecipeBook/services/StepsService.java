@@ -56,4 +56,15 @@ public class StepsService {
         }
     }
 
+    public List<Steps> getStepsByRecipeId(long recipeId){
+        return stepsRepo.findByRecipeId(recipeId);
+    }
+
+    public void deleteStepsInRecipe(long recipeId){
+        List<Steps> stepsToDelete = stepsRepo.findByRecipeId(recipeId);
+        for (var el : stepsToDelete){
+            stepsRepo.delete(el);
+        }
+    }
+
 }

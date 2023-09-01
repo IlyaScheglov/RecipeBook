@@ -13,4 +13,6 @@ public interface IngridientsRepo extends JpaRepository<Ingridients,Long> {
     List<Ingridients> findByUserIdAndNullRecipeId(@Param("usId") long userId, @Param("recId") long recipeId);
 
     Ingridients findById(long id);
+
+    List<Ingridients> findByRecipeId(long recipeId);
 }

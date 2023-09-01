@@ -1,5 +1,6 @@
 package com.example.RecipeBook.controllers;
 
+import com.example.RecipeBook.entities.Recipes;
 import com.example.RecipeBook.entities.RecipesToShow;
 import com.example.RecipeBook.entities.Users;
 import com.example.RecipeBook.services.FavouritesService;
@@ -14,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,23 +33,61 @@ public class RestControllerForAll {
 
 
     @GetMapping("/get_recipes")
-    public ResponseEntity getAllRecipes(Principal principal){
+    public ResponseEntity getAllRecipes(@RequestParam String typeList, @RequestParam String enteredData,
+                                        @RequestParam long lastElementId, Principal principal){
         Users users = usersService.getUserByPrincipal(principal);
-        return ResponseEntity.ok(recipesService.getAllRecipesToShow(users, "all"));
+        List<RecipesToShow> recipesToShow = new ArrayList<>();
+        if (typeList.equals("allRecipes")){
+            recipesToShow = recipesService.getAllRecipesToShow(users, "all", lastElementId);
+            return ResponseEntity.ok(checkRecipesSize(recipesToShow));
+        }
+        else if(typeList.equals("filterByCategory")){
+            long categoryId = Long.parseLong(enteredData);
+            recipesToShow = recipesService.getRecipesSortedByCategory(categoryId, users, lastElementId);
+            return ResponseEntity.ok(checkRecipesSize(recipesToShow));
+        }
+        else if(typeList.equals("filterByTagsOrTitle")){
+            recipesToShow = recipesService.getRecipesSortedByTagsOrTitle(enteredData, users, lastElementId);
+            return ResponseEntity.ok(checkRecipesSize(recipesToShow));
+        }
+        else{
+            return ResponseEntity.ok(new ArrayList<>());
+        }
     }
 
+    private List<Object> checkRecipesSize(List<RecipesToShow> recipesToShows){
+        List<Object> result = new ArrayList<>();
+        if (recipesToShows.size() > 3){
+            List<RecipesToShow> limitedListRecipes = recipesToShows.stream().limit(3).toList();
+            result.addAll(limitedListRecipes);
+            result.add(true);
+            return result;
+        }
+        else{
+            result.addAll(recipesToShows);
+            result.add(false);
+            return result;
+        }
+    }
+
+
+    @GetMapping("/find_liked_or_fav_recipe")
+    public ResponseEntity findLikedOrFavRecipe(@RequestParam long recipeId, Principal principal){
+        Users user = usersService.getUserByPrincipal(principal);
+        return ResponseEntity.ok(recipesService.findLikedOrFavRecipe(recipeId, user));
+    }
 
 
     @GetMapping("/get_favourite_recipes")
     public ResponseEntity getFavouriteRecipes(Principal principal){
         Users users = usersService.getUserByPrincipal(principal);
-        return ResponseEntity.ok(recipesService.getAllRecipesToShow(users, "fav"));
+        return ResponseEntity.ok(recipesService.getAllRecipesToShow(users, "fav", 0L));
     }
 
     @GetMapping("/get_recipes_in_profile")
     public ResponseEntity getRecipesInProfile(@RequestParam String typeList, Principal principal){
         Users users = usersService.getUserByPrincipal(principal);
-        return ResponseEntity.ok(recipesService.getAllRecipesToShow(users, typeList));
+        return ResponseEntity.ok(recipesService.getAllRecipesToShow(users, typeList, 0L));
     }
 
 

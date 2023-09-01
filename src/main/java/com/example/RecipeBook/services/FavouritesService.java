@@ -61,4 +61,12 @@ public class FavouritesService {
         return recipesIdToReturn;
     }
 
+    public void deleteAllRecipeFavourites(long recipeId){
+        List<Favourites> favouritesToDelete = favouritesRepo.findFavouritesByRecipeId(recipeId);
+
+        for (var el : favouritesToDelete){
+            favouritesRepo.delete(el);
+        }
+    }
+
 }

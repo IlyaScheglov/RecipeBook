@@ -6,8 +6,8 @@ import com.example.RecipeBook.repos.LikesRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.Timestamp;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -37,17 +37,17 @@ public class LikesService {
 
     public void deleteLike(long userId, long recipeId){
         List<Likes> likesToDelete = likesRepo.findIdOfLikeByUserAndRecipeId(recipeId, userId);
-            Likes likes = new Likes();
             for (var el : likesToDelete) {
-                likes = el;
+                likesRepo.delete(el);
             }
-            likesRepo.delete(likes);
     }
 
     public void addLike(long userId, long recipeId){
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         Likes likes = new Likes();
         likes.setUserId(userId);
         likes.setRecipeId(recipeId);
+        likes.setDateOfLike(timestamp);
         likesRepo.save(likes);
     }
 
@@ -59,6 +59,24 @@ public class LikesService {
             recipesIdToReturn.add(el.getRecipeId());
         }
         return recipesIdToReturn;
+    }
+
+    public void deleteAllRecipeLikes(long recipeId){
+
+        List<Likes> likesToDelete = likesRepo.findLikesByRecipeId(recipeId);
+
+        for (var el : likesToDelete){
+            likesRepo.delete(el);
+        }
+
+    }
+
+    public List<Long> findLastWeekLiked(){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.WEEK_OF_MONTH, -1);
+        Timestamp timestamp = new Timestamp(calendar.getTimeInMillis());
+        return likesRepo.findLastWeekLiked(timestamp);
     }
 
 }

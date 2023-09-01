@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 
 @Entity
 @Getter
@@ -22,6 +23,9 @@ public class Likes implements Serializable{
 
     @Column(name = "recipe_id")
     private long recipeId;
+
+    @Column(name = "date_of_like")
+    private Timestamp dateOfLike;
 
     @ManyToOne
     private Users users;

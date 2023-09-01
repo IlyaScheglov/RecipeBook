@@ -46,7 +46,8 @@ public class TagsInRecipeService {
                         tagsInRecipe.setRecipeId(recipeId);
                         tagsInRecipe.setTagId(tagsService.getTagIdByTitle(el));
                         tagsInRecipeRepo.save(tagsInRecipe);
-                    } else {
+                    }
+                    else {
                         tagsService.addNewTag(el);
                         TagsInRecipe tagsInRecipe = new TagsInRecipe();
                         tagsInRecipe.setRecipeId(recipeId);
@@ -59,5 +60,15 @@ public class TagsInRecipeService {
 
     }
 
+    public void deleteTagsInRecipe(long recipeId){
+        List<TagsInRecipe> tagsInRecipesToDelete = tagsInRecipeRepo.findByRecipeId(recipeId);
+        for (var el : tagsInRecipesToDelete){
+            tagsInRecipeRepo.delete(el);
+        }
+    }
+
+    public List<Long> findRecipeIdByTagId(long tagId){
+        return tagsInRecipeRepo.findRecipeIdByTagId(tagId);
+    }
 
 }

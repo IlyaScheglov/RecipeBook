@@ -88,6 +88,19 @@ public class UsersService implements UserDetailsService{
         return BCrypt.checkpw(password, hashedPassword);
     }
 
+    public boolean editUserProfile(Users user, String email, String name, String oldPassword, String newPassword){
+        if (passwordEncoder().matches(oldPassword, user.getPassword())){
 
+            user.setEmail(email);
+            user.setName(name);
+            user.setPassword(passwordEncoder().encode(newPassword));
+            usersRepo.save(user);
+
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
 
 }

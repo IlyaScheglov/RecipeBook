@@ -62,4 +62,16 @@ public class IngridientsService {
             ingridientsRepo.save(el);
         }
     }
+
+    public List<Ingridients> getIngridientsByRecipeId(long recipeId){
+        return ingridientsRepo.findByRecipeId(recipeId);
+    }
+
+    public void deleteIngridientsInRecipe(long recipeId){
+        List<Ingridients> ingridientsToDelete = ingridientsRepo.findByRecipeId(recipeId);
+        for (var el : ingridientsToDelete){
+            ingridientsRepo.delete(el);
+        }
+    }
+
 }

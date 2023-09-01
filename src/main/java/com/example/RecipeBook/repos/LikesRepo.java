@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 public interface LikesRepo extends JpaRepository<Likes, Long> {
@@ -19,5 +20,8 @@ public interface LikesRepo extends JpaRepository<Likes, Long> {
     List<Likes> findIdOfLikeByUserAndRecipeId(@Param("recId") long recipeId, @Param("usId") long userId);
 
     List<Likes> findByUserId(long userId);
+
+    @Query("SELECT l.recipeId FROM Likes l WHERE l.dateOfLike >= :weekAgo")
+    List<Long> findLastWeekLiked(@Param("weekAgo") Timestamp weekAgo);
 
 }

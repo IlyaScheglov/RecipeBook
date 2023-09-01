@@ -53,7 +53,6 @@
     $scope.changeList = function(typeList){
     $scope.typeList = typeList;
     $scope.getRecipes();
-    console.log("Hello World");
     }
 
     $scope.like = function(id){
@@ -117,7 +116,7 @@
     <form class="me-3 py-2 link-body-emphasis text-decoration-none" th:action="@{/logout}" method="post">
         <input  type="submit" value="Выйти"/>
     </form>
-    <button class="btn btn-primary rounded-pill px-3" type="button"  th:onclick="|window.location.href='/profile/addrecipe'|">Добавить рецепт</button>
+    <button class="btn btn-primary rounded-pill px-3" type="button"  th:onclick="|window.location.href='/profile/edit_user'|">Изменить профиль</button>
 </div>
 <div>
 <h2 class="fs-4" th:text="'Логин: ' + ${user.username}"></h2>
@@ -132,7 +131,7 @@
 <h2 class="fs-4" ng-if="typeList == 'liked'">Мои лайки</h2>
 <h2 class="fs-4" ng-if="typeList == 'fav'">Избранное</h2>
 
-<p ng-if="recipes.length() == 0">Здесь нету рецептов</p>
+<p ng-if="recipes.length == 0">Здесь нету рецептов</p>
 <div class="album py-5 bg-body-tertiary">
     <div class="container">
         <div class="col">
@@ -150,6 +149,7 @@
                             </div>
                             <p class="card-text">{{rec.title}}</p>
                             <p class="card-text">{{rec.description}}</p>
+                            <a ng-href="/recipeslist/info/{{rec.id}}">Информация</a>
                         </div>
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="btn-group">

@@ -1,5 +1,6 @@
 package com.example.RecipeBook.services;
 
+import com.example.RecipeBook.entities.Likes;
 import com.example.RecipeBook.entities.Recipes;
 import com.example.RecipeBook.entities.RecipesToShow;
 import com.example.RecipeBook.entities.Users;
@@ -7,9 +8,7 @@ import com.example.RecipeBook.repos.RecipesRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -25,26 +24,84 @@ public class RecipesService {
 
     private final FavouritesService favouritesService;
 
+    private final TagsService tagsService;
 
-    public List<Recipes> getAllRecipes(){
-        return recipesRepo.findAll();
+
+    public RecipesToShow findLikedOrFavRecipe(long recipeId, Users user){
+        RecipesToShow result = new RecipesToShow();
+
+        List<Recipes> recipes = new ArrayList<>();
+        recipes.add(recipesRepo.findByRecipeId(recipeId));
+        List<RecipesToShow> recipesToShow = refactorRecipesToRecToShow(recipes, user);
+
+        for (var el : recipesToShow){
+            result = el;
+        }
+
+        return result;
     }
 
-    public List<RecipesToShow> getAllRecipesToShow(Users user, String typeList){
-        List<RecipesToShow> listToReturn = new ArrayList<>();
-        List<Recipes> recipes = new ArrayList<>();
+    public List<RecipesToShow> getRecipesSortedByCategory(long categoryId, Users user, long lastElementId){
+        List<Recipes> recipes = recipesRepo.findByCategoryTypeWithoutMapped(categoryId, lastElementId);
+        return limitRecipeList(recipes, user);
+    }
+
+    public List<RecipesToShow> getRecipesSortedByTagsOrTitle(String enteredData, Users user, long lastElementId){
+        if (!enteredData.equals("")) {
+            long tagId = tagsService.getTagIdByTitle(enteredData);
+            if (tagId != 0) {
+                List<Long> recipeIdList = tagsInRecipeService.findRecipeIdByTagId(tagId);
+                List<Recipes> recipes = new ArrayList<>();
+                for (var el : recipeIdList) {
+                    if (el > lastElementId){
+                        recipes.add(recipesRepo.findByRecipeId(el));
+                    }
+                }
+                return limitRecipeList(recipes, user);
+            }
+            else {
+                List<Recipes> recipes = recipesRepo.findRecipeWhereTitleLikeWithoutMapped("%" + enteredData + "%", lastElementId);
+                return limitRecipeList(recipes, user);
+            }
+        }
+        else {
+            return getAllRecipesToShow(user, "all", lastElementId);
+        }
+    }
+
+    public List<RecipesToShow> getAllRecipesToShow(Users user, String typeList, long lastElementId){
         if (typeList.equals("all")){
-            recipes = recipesRepo.findAll();
+            List<Recipes> recipes = recipesRepo.findAllWithoutMapped(lastElementId);
+            return limitRecipeList(recipes, user);
         }
         else if (typeList.equals("own")){
-            recipes = getOwnRecipes(user.getId());
+            return refactorRecipesToRecToShow(getOwnRecipes(user.getId()), user);
         }
         else if (typeList.equals("liked")){
-            recipes = getLikedRecipes(user.getId());
+            return refactorRecipesToRecToShow(getLikedRecipes(user.getId()), user);
         }
         else if (typeList.equals("fav")){
-            recipes = getFavouriteRecipes(user.getId());
+            return refactorRecipesToRecToShow(getFavouriteRecipes(user.getId()), user);
         }
+        else {
+            return null;
+        }
+
+    }
+
+    private List<RecipesToShow> limitRecipeList(List<Recipes> recipes, Users user){
+        if (recipes.size() > 3){
+            List<Recipes> limitedListRecipes = recipes.stream().limit(4).toList();
+            return refactorRecipesToRecToShow(limitedListRecipes, user);
+        }
+        else {
+            return refactorRecipesToRecToShow(recipes, user);
+        }
+    }
+
+
+    private List<RecipesToShow> refactorRecipesToRecToShow(List<Recipes> recipes, Users user){
+        List<RecipesToShow> listToReturn = new ArrayList<>();
 
         for (var el : recipes){
             RecipesToShow recShow = new RecipesToShow();
@@ -66,6 +123,7 @@ public class RecipesService {
 
         return listToReturn;
     }
+
 
     private List<Recipes> getOwnRecipes(long userId){
         return recipesRepo.findByUserId(userId);
@@ -98,34 +156,15 @@ public class RecipesService {
     }
 
     public Recipes getRecipeById(long recipeId){
-        Optional<Recipes> recipes = recipesRepo.findById(recipeId);
-        List<Recipes> recipesList = new ArrayList<>();
-        recipes.ifPresent(recipesList::add);
-        Recipes result = new Recipes();
-        for (var el : recipesList){
-            result = el;
-        }
-        return result;
+        return recipesRepo.findByRecipeId(recipeId);
     }
 
-    public void addNewRecipe(String title, String description, String tags,
-                             int time, int portion, String photoPath, long userId){
-
-
-
-        if ((time > 0) && (portion > 0)){
-
-            Recipes recipes = new Recipes();
-            recipes.setTitle(title);
-            recipes.setDescription(description);
-            recipes.setCookingTimeMinutes(time);
-            recipes.setPortions(portion);
-            recipes.setDishImage(photoPath);
-            recipes.setCategoryType(1L);
-            recipes.setUserId(userId);
-            recipesRepo.save(recipes);
-
-            tagsInRecipeService.addNewTags(recipes.getId(), tags);
+    public boolean isThisRecipeByThisUser(Recipes recipes, long userId){
+        if (userId == recipes.getUserId()){
+            return true;
+        }
+        else{
+            return false;
         }
     }
 
@@ -134,6 +173,43 @@ public class RecipesService {
         recipes.setDishImage(photoPath);
         recipesRepo.save(recipes);
         return recipes.getId();
+    }
+
+    public void deleteRecipe(Recipes recipes){
+        recipesRepo.delete(recipes);
+    }
+
+    public void updateImage(long recipeId, String path){
+        Recipes recipe = getRecipeById(recipeId);
+        recipe.setDishImage(path);
+        recipesRepo.save(recipe);
+    }
+
+    public void updateRecipe(Recipes recipes){
+        recipesRepo.save(recipes);
+    }
+
+    public Recipes findMostLikedRecipeLastWeek(List<Long> lastWeekLiked){
+        if(lastWeekLiked.size() != 0){
+            long mostLikedId = 0L;
+            int countLikesOnRecipe = 0;
+
+            for (var el : lastWeekLiked){
+                int countDublicates = Collections.frequency(lastWeekLiked, el);
+                if (countDublicates > countLikesOnRecipe){
+                    mostLikedId = el;
+                    countLikesOnRecipe = countDublicates;
+                }
+            }
+
+            return recipesRepo.findByRecipeId(mostLikedId);
+
+        }
+        else{
+            List<Recipes> allRecipes = recipesRepo.findAll();
+            Random random = new Random();
+            return allRecipes.get(random.nextInt(allRecipes.size() - 1));
+        }
     }
 
 }
